@@ -2,795 +2,604 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yokkaichi Asthma (四日市ぜんそく): Air Pollution & Pulmonary Impact</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Yokkaichi Asthma (四日市ぜんそく) | 3D Interactive Case Study</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Three.js CDN for 3D WebGL Lungs -->
+  <!-- Three.js CDN (Stable WebGL 3D Engine) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      touch-action: manipulation;
     }
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {
-      width: 6px;
+      width: 4px;
+      height: 4px;
     }
     ::-webkit-scrollbar-track {
       background: #020617;
     }
     ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 3px;
+      background: #334155;
+      border-radius: 2px;
     }
   </style>
 </head>
-<body class="h-screen w-screen overflow-hidden bg-slate-950 text-slate-100 flex flex-col justify-between select-none">
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between select-none">
 
-  <!-- ================= 1. HEADER & TOP BANNER ================= -->
-  <header class="px-4 py-2.5 sm:px-6 bg-slate-950/90 border-b border-slate-800/80 shrink-0">
-    <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3">
-      <!-- Title & Japanese Kanji -->
+  <!-- ================= 1. HEADER & STATS ================= -->
+  <header class="px-4 py-3 bg-slate-950/95 border-b border-slate-800/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <!-- Title & Subtitle -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
-          <i data-lucide="wind" class="w-5 h-5 text-slate-950 stroke-[2.5]"></i>
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-600 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
+          <svg class="w-5 h-5 text-slate-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2M9.6 4.6A2 2 0 1 1 11 8H2M12.6 19.4A2 2 0 1 0 14 16H2"/>
+          </svg>
         </div>
         <div>
           <div class="flex items-center gap-2 flex-wrap">
-            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">
-              Yokkaichi Asthma <span class="text-amber-400 font-serif text-sm font-normal">(四日市ぜんそく)</span>
+            <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white">
+              Yokkaichi Asthma <span class="text-amber-400 font-serif text-xs sm:text-sm font-normal">(四日市ぜんそく)</span>
             </h1>
-            <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
-              Air Pollution & Pulmonary Impact
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+              3D Case Study
             </span>
           </div>
-          <p class="text-xs text-slate-400 leading-tight">
-            An interactive 3D simulation of Japan’s 1960s industrial sulfur dioxide (SO₂) crisis.
+          <p class="text-[11px] text-slate-400">
+            Japan’s 1960s industrial SO₂ crisis & pulmonary deterioration.
           </p>
         </div>
       </div>
 
-      <!-- 3 Stat Cards -->
-      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-        <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400 shrink-0">
-            <i data-lucide="gauge" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">PEAK EXPOSURE</div>
-            <div class="text-xs font-bold text-rose-300 font-mono">~0.2–0.5+ ppm SO₂</div>
-          </div>
+      <!-- Quick Stats -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end overflow-x-auto pb-1 sm:pb-0">
+        <div class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-center shrink-0">
+          <div class="text-[9px] font-mono text-slate-400">PEAK SO₂</div>
+          <div class="text-xs font-bold text-rose-400 font-mono">&gt;0.5 ppm</div>
         </div>
-
-        <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
-            <i data-lucide="users" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">RECOGNIZED VICTIMS</div>
-            <div class="text-xs font-bold text-amber-300 font-mono">1,000+ Chronic Cases</div>
-          </div>
+        <div class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-center shrink-0">
+          <div class="text-[9px] font-mono text-slate-400">VICTIMS</div>
+          <div class="text-xs font-bold text-amber-400 font-mono">1,140+</div>
         </div>
-
-        <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hidden sm:flex items-center gap-2.5">
-          <div class="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-400 shrink-0">
-            <i data-lucide="scale" class="w-3.5 h-3.5"></i>
-          </div>
-          <div>
-            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">LEGAL MILESTONE</div>
-            <div class="text-xs font-bold text-cyan-300 font-mono">1972 Landmark Ruling</div>
-          </div>
+        <div class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-center shrink-0">
+          <div class="text-[9px] font-mono text-slate-400">VERDICT</div>
+          <div class="text-xs font-bold text-cyan-400 font-mono">1972 Win</div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- ================= 2. UPPER-MIDDLE TIME SLIDER ================= -->
-  <div class="px-4 py-2 sm:px-6 bg-slate-950/60 border-b border-slate-800/80 shrink-0">
-    <div class="max-w-[1700px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-      <!-- Left Phase Label -->
-      <div class="flex items-center gap-2.5 shrink-0">
-        <div class="w-6 h-6 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
-          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+  <!-- ================= 2. INTERACTIVE TIMELINE CONTROLLER ================= -->
+  <div class="px-4 py-3 bg-slate-900/90 border-b border-slate-800 sticky top-[61px] sm:top-[65px] z-40 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto flex flex-col gap-2.5">
+      <!-- Status Text Row -->
+      <div class="flex items-center justify-between text-xs font-mono">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-slate-400">TIMELINE:</span>
+          <strong id="yearDisplay" class="text-amber-400 text-sm font-bold">1959</strong>
+          <span id="phaseDisplay" class="text-slate-300 text-xs hidden sm:inline">• Pre-Industrial Baseline</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider font-semibold">
-            TIMELINE STATE:
-          </span>
-          <span id="currentYearText" class="text-sm font-bold text-white font-mono">1959</span>
-          <span id="currentPhaseText" class="text-xs text-slate-400 hidden sm:inline">• Pre-Industrial Baseline</span>
-          <span id="currentSO2Badge" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-            0.015 ppm
-          </span>
-        </div>
+        <span id="so2Badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          0.015 ppm (Clean Air)
+        </span>
       </div>
 
-      <!-- Central Range Slider + Buttons -->
-      <div className="flex-1 max-w-2xl w-full flex items-center gap-3">
-        <span class="text-[11px] font-mono text-slate-500 shrink-0">1959</span>
-        <div class="flex-1 relative py-1">
-          <input
-            id="timeRangeSlider"
-            type="range"
-            min="0"
-            max="3"
-            step="1"
-            value="0"
-            class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
-          />
-        </div>
-        <span class="text-[11px] font-mono text-slate-500 shrink-0">1972</span>
+      <!-- Slider -->
+      <div class="flex items-center gap-3">
+        <input
+          id="timelineSlider"
+          type="range"
+          min="0"
+          max="3"
+          step="1"
+          value="0"
+          class="w-full h-2.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-amber-400"
+        />
+      </div>
 
-        <!-- 4 Quick Buttons -->
-        <div class="flex items-center gap-1.5 shrink-0 ml-2">
-          <button onclick="setYearIndex(0)" id="btnNode0" class="px-2.5 py-1 rounded-lg text-xs font-mono border bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-md shadow-amber-500/20">1959</button>
-          <button onclick="setYearIndex(1)" id="btnNode1" class="px-2.5 py-1 rounded-lg text-xs font-mono border bg-slate-900 text-slate-400 border-slate-800 hover:text-white">1963</button>
-          <button onclick="setYearIndex(2)" id="btnNode2" class="px-2.5 py-1 rounded-lg text-xs font-mono border bg-slate-900 text-slate-400 border-slate-800 hover:text-white">1967</button>
-          <button onclick="setYearIndex(3)" id="btnNode3" class="px-2.5 py-1 rounded-lg text-xs font-mono border bg-slate-900 text-slate-400 border-slate-800 hover:text-white">1972</button>
-        </div>
+      <!-- 4 Touch-Friendly Tap Buttons for Phones -->
+      <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
+        <button onclick="setYear(0)" id="nodeBtn0" class="py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20">
+          1959
+        </button>
+        <button onclick="setYear(1)" id="nodeBtn1" class="py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-slate-950 text-slate-400 border-slate-800 hover:text-white">
+          1963
+        </button>
+        <button onclick="setYear(2)" id="nodeBtn2" class="py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-slate-950 text-slate-400 border-slate-800 hover:text-white">
+          1967
+        </button>
+        <button onclick="setYear(3)" id="nodeBtn3" class="py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-slate-950 text-slate-400 border-slate-800 hover:text-white">
+          1972
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= 3. MAIN DUAL VISUALIZER STAGE ================= -->
-  <main class="flex-1 p-3 sm:p-4 overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-stretch">
+  <!-- ================= 3. MAIN DUAL VISUALIZERS ================= -->
+  <main class="flex-1 p-3 sm:p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
     
-    <!-- LEFT WINDOW: 3D MACRO LUNGS (Three.js) -->
-    <div class="lg:col-span-6 h-full min-h-0 relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-2xl overflow-hidden group">
-      <!-- Top Title Bar -->
-      <div class="flex items-center justify-between z-10 border-b border-slate-800 pb-2.5">
+    <!-- LEFT: 3D MACRO LUNGS VISUALIZER (Touch + Mouse Friendly) -->
+    <div class="lg:col-span-6 min-h-[340px] sm:min-h-[420px] rounded-2xl bg-slate-900/80 border border-slate-800 p-4 sm:p-5 flex flex-col justify-between shadow-2xl relative">
+      <!-- Title -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2 z-10">
         <div class="flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
           <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">
-            MACRO LUNGS VISUALIZER (3D INTERACTIVE)
+            3D LUNGS MODEL (TOUCH & DRAG)
           </span>
         </div>
-        <div class="flex items-center gap-2">
-          <button id="toggleOrbitBtn" onclick="toggleOrbit()" class="px-2 py-1 rounded-lg text-[11px] font-mono border transition-colors flex items-center gap-1 bg-amber-500/20 text-amber-300 border-amber-500/30">
-            <i data-lucide="rotate-cw" class="w-3 h-3"></i>
-            <span id="orbitBtnText">Orbit: ON</span>
-          </button>
-          <button onclick="reset3DCamera()" class="p-1 px-2 rounded-lg bg-slate-950 text-slate-400 hover:text-white border border-slate-800 text-[11px]">
-            Reset
-          </button>
-        </div>
+        <button onclick="toggle3DOrbit()" id="orbitToggleBtn" class="px-2 py-1 rounded text-[11px] font-mono bg-amber-500/20 text-amber-300 border border-amber-500/30">
+          Orbit: ON
+        </button>
       </div>
 
       <!-- 3D Canvas Mount -->
-      <div id="threejs-mount" class="w-full flex-1 relative cursor-grab active:cursor-grabbing min-h-[220px]">
-        <div id="hoverPrompt" class="absolute inset-0 pointer-events-none flex items-center justify-center transition-opacity duration-300 opacity-0">
-          <div class="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/40 backdrop-blur-md text-center shadow-lg shadow-amber-500/10">
-            <div class="flex items-center justify-center gap-1.5 text-xs font-mono text-amber-300 font-bold mb-0.5">
-              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
-              <span>Hover & Drag to Orbit 3D Lungs</span>
-            </div>
-            <p class="text-[10px] text-slate-400">
-              Inspect bronchial branching • See Micro Alveoli on right &rarr;
-            </p>
-          </div>
+      <div id="three-container" class="w-full flex-1 relative min-h-[220px] sm:min-h-[280px] cursor-grab active:cursor-grabbing flex items-center justify-center">
+        <!-- Center Touch Prompt -->
+        <div class="absolute bottom-2 text-center pointer-events-none text-[10px] font-mono text-slate-400 bg-slate-950/70 px-2.5 py-1 rounded-full border border-slate-800">
+          👆 Touch & Drag to rotate 3D lungs in 360°
         </div>
       </div>
 
       <!-- Bottom Status -->
-      <div class="z-10 pt-2.5 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
-        <div class="flex items-center gap-2">
-          <i data-lucide="activity" class="w-3.5 h-3.5 text-rose-400"></i>
-          <span class="text-slate-400">TISSUE STATE:</span>
-          <strong id="macroTissueState" class="text-white">Pre-Industrial Baseline</strong>
-        </div>
-        <span class="text-slate-400 text-[11px]">
-          Soot Density: <strong id="macroSootDensity" class="text-amber-400">0%</strong>
-        </span>
+      <div class="border-t border-slate-800 pt-2 flex items-center justify-between text-xs font-mono text-slate-400">
+        <span>State: <strong id="macroStateText" class="text-white">Healthy Normal</strong></span>
+        <span>Soot: <strong id="macroSootText" class="text-amber-400">0%</strong></span>
       </div>
     </div>
 
-    <!-- RIGHT WINDOW: MICRO ALVEOLAR CROSS-SECTION -->
-    <div class="lg:col-span-6 h-full min-h-0 relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-2xl overflow-hidden">
-      <!-- Top Title Bar -->
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 z-10">
-        <div class="flex items-center gap-2">
-          <i data-lucide="microscope" class="w-4 h-4 text-amber-400"></i>
-          <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">
-            MICRO ALVEOLAR DAMAGE VIEW (CROSS-SECTION)
-          </span>
-        </div>
-        <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-950 text-slate-400 border border-slate-800">
-          Mag: 400x Cellular
+    <!-- RIGHT: MICRO ALVEOLI CELLULAR DAMAGE VIEW -->
+    <div class="lg:col-span-6 min-h-[340px] sm:min-h-[420px] rounded-2xl bg-slate-900/80 border border-slate-800 p-4 sm:p-5 flex flex-col justify-between shadow-2xl">
+      <!-- Title -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <span class="text-xs font-mono font-bold text-white uppercase tracking-wider">
+          MICRO ALVEOLI DAMAGE (400X CROSS-SECTION)
+        </span>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
+          Cellular View
         </span>
       </div>
 
-      <!-- Cross Section SVG Stage -->
-      <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-2 min-h-[220px]">
-        <!-- SVG Graphic (7 Cols) -->
-        <div class="md:col-span-7 h-full flex flex-col items-center justify-center relative">
-          <div class="relative w-full max-w-[280px] sm:max-w-[320px] aspect-square">
-            <svg viewBox="0 0 240 240" class="w-full h-full drop-shadow-2xl">
-              <defs>
-                <radialGradient id="edemaGrad" cx="50%" cy="50%" r="50%">
-                  <stop id="edemaStop1" offset="0%" stop-color="#f59e0b" stop-opacity="0" />
-                  <stop id="edemaStop2" offset="100%" stop-color="#ef4444" stop-opacity="0" />
-                </radialGradient>
-                <radialGradient id="alveolusFill" cx="40%" cy="40%" r="60%">
-                  <stop id="alvFillStop1" offset="0%" stop-color="#f472b6" stop-opacity="0.35" />
-                  <stop id="alvFillStop2" offset="100%" stop-color="#f472b6" stop-opacity="0.75" />
-                </radialGradient>
-              </defs>
+      <!-- SVG Alveoli Graphic -->
+      <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center py-2">
+        <!-- SVG Canvas (7 Cols) -->
+        <div class="sm:col-span-7 flex justify-center">
+          <svg viewBox="0 0 240 240" class="w-48 sm:w-56 h-48 sm:h-56 drop-shadow-xl">
+            <defs>
+              <radialGradient id="edemaGradient" cx="50%" cy="50%" r="50%">
+                <stop id="edemaStopA" offset="0%" stop-color="#f59e0b" stop-opacity="0" />
+                <stop id="edemaStopB" offset="100%" stop-color="#ef4444" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="alvGradient" cx="40%" cy="40%" r="60%">
+                <stop id="alvStopA" offset="0%" stop-color="#f472b6" stop-opacity="0.4" />
+                <stop id="alvStopB" offset="100%" stop-color="#f472b6" stop-opacity="0.8" />
+              </radialGradient>
+            </defs>
 
-              <!-- Capillaries -->
-              <path id="capillary1" d="M 20,40 Q 90,20 160,35 T 220,50 M 15,110 Q 80,105 150,115 T 225,120 M 25,190 Q 95,205 165,195 T 220,180" fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round" class="transition-all duration-500 opacity-80" />
-              <path id="capillary2" d="M 50,20 Q 40,100 45,180 T 55,220 M 120,15 Q 125,95 115,175 T 130,225 M 190,20 Q 200,105 185,185 T 195,220" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" class="transition-all duration-500 opacity-70" />
+            <!-- Capillaries -->
+            <path id="cap1" d="M 20,40 Q 90,20 160,35 T 220,50 M 15,110 Q 80,105 150,115 T 225,120 M 25,190 Q 95,205 165,195 T 220,180" fill="none" stroke="#ef4444" stroke-width="6" stroke-linecap="round" class="transition-all duration-500 opacity-80" />
+            <path id="cap2" d="M 50,20 Q 40,100 45,180 T 55,220 M 120,15 Q 125,95 115,175 T 130,225 M 190,20 Q 200,105 185,185 T 195,220" fill="none" stroke="#ef4444" stroke-width="4.5" stroke-linecap="round" class="transition-all duration-500 opacity-70" />
 
-              <!-- 4 Alveolar Sacs -->
-              <g onmouseenter="hoverAlveolus(1)" onmouseleave="unhoverAlveolus()" class="cursor-pointer">
-                <circle id="sac1" cx="85" cy="90" r="38" fill="url(#alveolusFill)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
-                <ellipse id="edema1" cx="85" cy="103" rx="24" ry="11" fill="url(#edemaGrad)" class="transition-all duration-500" />
-                <text x="85" y="93" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">A1</text>
-              </g>
+            <!-- 4 Alveolar Sacs -->
+            <g onclick="selectAlveolus(1)" class="cursor-pointer">
+              <circle id="sacA1" cx="85" cy="90" r="38" fill="url(#alvGradient)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
+              <ellipse id="edemaA1" cx="85" cy="103" rx="24" ry="11" fill="url(#edemaGradient)" class="transition-all duration-500" />
+              <text x="85" y="93" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">A1</text>
+            </g>
 
-              <g onmouseenter="hoverAlveolus(2)" onmouseleave="unhoverAlveolus()" class="cursor-pointer">
-                <circle id="sac2" cx="155" cy="85" r="35" fill="url(#alveolusFill)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
-                <ellipse id="edema2" cx="155" cy="97" rx="22" ry="10" fill="url(#edemaGrad)" class="transition-all duration-500" />
-                <text x="155" y="88" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">A2</text>
-              </g>
+            <g onclick="selectAlveolus(2)" class="cursor-pointer">
+              <circle id="sacA2" cx="155" cy="85" r="35" fill="url(#alvGradient)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
+              <ellipse id="edemaA2" cx="155" cy="97" rx="22" ry="10" fill="url(#edemaGradient)" class="transition-all duration-500" />
+              <text x="155" y="88" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">A2</text>
+            </g>
 
-              <g onmouseenter="hoverAlveolus(3)" onmouseleave="unhoverAlveolus()" class="cursor-pointer">
-                <circle id="sac3" cx="95" cy="155" r="36" fill="url(#alveolusFill)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
-                <ellipse id="edema3" cx="95" cy="167" rx="23" ry="11" fill="url(#edemaGrad)" class="transition-all duration-500" />
-                <text x="95" y="158" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">B1</text>
-              </g>
+            <g onclick="selectAlveolus(3)" class="cursor-pointer">
+              <circle id="sacB1" cx="95" cy="155" r="36" fill="url(#alvGradient)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
+              <ellipse id="edemaB1" cx="95" cy="167" rx="23" ry="11" fill="url(#edemaGradient)" class="transition-all duration-500" />
+              <text x="95" y="158" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">B1</text>
+            </g>
 
-              <g onmouseenter="hoverAlveolus(4)" onmouseleave="unhoverAlveolus()" class="cursor-pointer">
-                <circle id="sac4" cx="160" cy="150" r="40" fill="url(#alveolusFill)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
-                <ellipse id="edema4" cx="160" cy="164" rx="26" ry="12" fill="url(#edemaGrad)" class="transition-all duration-500" />
-                <text x="160" y="153" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">B2</text>
-              </g>
+            <g onclick="selectAlveolus(4)" class="cursor-pointer">
+              <circle id="sacB2" cx="160" cy="150" r="40" fill="url(#alvGradient)" stroke="#fbcfe8" stroke-width="2" class="transition-all duration-500" />
+              <ellipse id="edemaB2" cx="160" cy="164" rx="26" ry="12" fill="url(#edemaGradient)" class="transition-all duration-500" />
+              <text x="160" y="153" fill="#ffffff" font-size="9" font-family="monospace" text-anchor="middle">B2</text>
+            </g>
 
-              <!-- Soot Group Container -->
-              <g id="sootParticlesGroup"></g>
-
-              <text id="chemFormula" x="120" y="230" fill="#f59e0b" font-size="9" font-family="monospace" text-anchor="middle" class="opacity-0 transition-opacity duration-300">
-                SO₂ + H₂O → H₂SO₃ (Sulfurous Acid Mist)
-              </text>
-            </svg>
-          </div>
+            <!-- Dynamic Particles Group -->
+            <g id="svgParticleGroup"></g>
+          </svg>
         </div>
 
-        <!-- Micro-Data Card (5 Cols) -->
-        <div class="md:col-span-5 flex flex-col justify-between h-full space-y-2.5">
-          <div class="p-3.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2.5 shadow-xl">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
-              <span id="microInspectTitle" class="text-[10px] font-mono text-amber-400 font-bold uppercase">
-                CELLULAR DIAGNOSTIC CARD
-              </span>
-              <span class="text-[10px] font-mono text-slate-500">LIVE READOUT</span>
-            </div>
-
-            <div>
-              <span class="text-[10px] font-mono text-slate-400 block">CELL STATUS:</span>
-              <div id="microCellStatus" class="text-xs font-bold font-mono text-emerald-400">
-                Intact & Elastic
-              </div>
-            </div>
-
-            <div>
-              <span class="text-[10px] font-mono text-slate-400 block">GAS EXCHANGE CAPACITY:</span>
-              <div class="flex items-baseline gap-2">
-                <span id="microGasCapacity" class="text-sm font-black text-white font-mono">100%</span>
-                <span id="microCapacityLoss" class="text-[11px] font-mono text-rose-400">(0% Loss)</span>
-              </div>
-            </div>
-
-            <div>
-              <span class="text-[10px] font-mono text-slate-400 block">CHEMICAL IRRITATION:</span>
-              <div id="microSO2Reaction" class="text-[11px] font-medium text-slate-200 leading-snug">
-                Nominal (No Acid Formation)
-              </div>
+        <!-- Diagnostic Card (5 Cols) -->
+        <div class="sm:col-span-5 p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2 text-xs">
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block">CELL STATUS:</span>
+            <strong id="cellStatusText" class="text-emerald-400 font-mono block">Intact & Elastic</strong>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block">GAS CAPACITY:</span>
+            <div class="flex items-baseline gap-1.5">
+              <strong id="gasCapText" class="text-white font-mono text-sm">100%</strong>
+              <span id="gasLossText" class="text-[10px] font-mono text-rose-400">(0% Loss)</span>
             </div>
           </div>
-
-          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-slate-800/80 text-[11px] text-slate-300 leading-relaxed flex items-start gap-2">
-            <i data-lucide="activity" class="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5"></i>
-            <span id="microClinicalSymptom">Unobstructed breathing, intact ciliated epithelial lining, 100% lung vital capacity.</span>
+          <div>
+            <span class="text-[10px] font-mono text-slate-400 block">SO₂ REACTION:</span>
+            <span id="so2ReactionText" class="text-slate-300 text-[11px] leading-tight block">Nominal (Clear air)</span>
           </div>
         </div>
       </div>
 
-      <!-- Bottom Status -->
-      <div class="z-10 pt-2.5 border-t border-slate-800 flex items-center justify-between text-xs font-mono">
-        <div class="flex items-center gap-1.5 text-amber-300">
-          <i data-lucide="droplets" class="w-3.5 h-3.5"></i>
-          <span id="microEdemaPct">Alveolar Edema: 0%</span>
-        </div>
-        <span class="text-slate-400 text-[11px]">
-          Hover alveoli circles for micro-inspection
-        </span>
+      <!-- Clinical Symptom Excerpt -->
+      <div class="border-t border-slate-800 pt-2 text-[11px] text-slate-300 leading-snug">
+        🩺 <span id="symptomText">Normal breathing, intact ciliated epithelial airway lining.</span>
       </div>
     </div>
   </main>
 
-  <!-- ================= 4. BOTTOM IMPACT DRAWER ================= -->
-  <div class="bg-slate-950 border-t border-slate-800/90 text-slate-300 text-xs shrink-0 z-20">
-    <div class="max-w-[1700px] mx-auto px-4 sm:px-6 py-2">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
-        <div class="flex items-center gap-3 flex-wrap">
-          <span class="font-mono text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
-            <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
-            HISTORICAL IMPACT SUMMARY:
-          </span>
-          <span class="text-[11px] text-slate-300">
-            <strong class="text-white">Cause:</strong> Unregulated SO₂ emissions from petroleum refining complexes (Kombinat).
-          </span>
-          <span class="text-slate-600 hidden md:inline">•</span>
-          <span class="text-[11px] text-slate-300">
-            <strong class="text-white">Consequence:</strong> Widespread COPD, severe asthma attacks, and legal precedents establishing joint corporate liability.
-          </span>
-        </div>
-
-        <button onclick="toggleDrawer()" class="flex items-center gap-1 text-[11px] font-mono text-cyan-400 hover:text-cyan-300 px-2 py-0.5 rounded-lg bg-slate-900 border border-slate-800 transition-colors shrink-0">
-          <span id="drawerBtnText">Expand Judicial & Policy Context</span>
-          <i id="drawerChevron" data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
-        </button>
+  <!-- ================= 4. BOTTOM HISTORICAL DRAWER ================= -->
+  <footer class="bg-slate-950 border-t border-slate-800/80 p-3 sm:p-4 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+      <div class="leading-relaxed">
+        <strong class="text-white">Cause:</strong> Unregulated 3.0%+ sulfur heavy crude oil combustion at the Yokkaichi Kombinat. <br class="hidden sm:inline"/>
+        <strong class="text-white">Consequence:</strong> First collective air pollution victory in Japan (1972), establishing strict polluter liability.
       </div>
-
-      <!-- Expandable Details -->
-      <div id="drawerContent" class="hidden mt-3 pt-3 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-3 gap-4 text-[11px] leading-relaxed">
-        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="font-bold text-white mb-1 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
-            Zero-Buffer Urban Siting
-          </div>
-          <p class="text-slate-400">
-            Heavy oil refineries were built &lt;400m from Isozu fishing hamlets. High-sulfur crude was burned 24/7 without scrubbers.
-          </p>
-        </div>
-
-        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="font-bold text-white mb-1 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
-            Joint Tort Liability (Art. 719)
-          </div>
-          <p class="text-slate-400">
-            Tsu District Court held 6 industrial conglomerates jointly and severally liable, preventing polluters from evading responsibility.
-          </p>
-        </div>
-
-        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-          <div class="font-bold text-white mb-1 flex items-center gap-1.5">
-            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-            FGD Scrubbers & Soryo Kisei
-          </div>
-          <p class="text-slate-400">
-            Japan pioneered Flue Gas Desulfurization (FGD) and regional aggregate carrying capacity quotas (Soryo Kisei), restoring blue skies.
-          </p>
-        </div>
+      <div class="text-[11px] font-mono text-slate-500 shrink-0">
+        Mie Prefecture, Japan (1959–1972)
       </div>
     </div>
-  </div>
+  </footer>
 
-  <!-- ================= 5. INTERACTIVE JAVASCRIPT LOGIC ================= -->
+  <!-- ================= 5. ROBUST JAVASCRIPT ================= -->
   <script>
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    // Dataset for the 4 Timeline Nodes
-    const TIMELINE_DATA = [
+    const DATA = [
       {
         year: 1959,
         phase: "Pre-Industrial Baseline",
-        so2ppm: "0.015 ppm",
+        so2Text: "0.015 ppm (Clean Air)",
         badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30",
         lungColor: 0xf472b6,
-        lungEmissive: 0x3b0764,
-        roughness: 0.35,
-        metalness: 0.1,
+        roughness: 0.3,
         sootDensity: 0.0,
         pulseSpeed: 1.5,
-        pulseAmplitude: 0.04,
         cellStatus: "Intact & Elastic",
         cellStatusColor: "text-emerald-400",
-        gasExchangeCapacity: "100%",
-        capacityLoss: "0% Loss",
+        gasCap: "100%",
+        gasLoss: "0% Loss",
         so2Reaction: "Nominal (No Acid Formation)",
-        alveoliFillColor: "#f472b6",
-        capillaryColor: "#ef4444",
-        capillaryWidth: 6,
+        fillColor: "#f472b6",
+        capColor: "#ef4444",
+        capWidth: 6,
         edemaOpacity: 0,
         particles: 0,
-        ruptured: false,
-        clinicalSymptom: "Unobstructed breathing, intact ciliated epithelial lining, 100% lung vital capacity."
+        symptoms: "Normal breathing, intact ciliated epithelial airway lining, 100% vital capacity."
       },
       {
         year: 1963,
-        phase: "Industrial Expansion & Early Smog",
-        so2ppm: "0.075 ppm",
+        phase: "Industrial Expansion & Smog",
+        so2Text: "0.075 ppm (Smog Alert)",
         badgeClass: "bg-amber-500/20 text-amber-300 border-amber-500/30",
         lungColor: 0xe17575,
-        lungEmissive: 0x451a03,
         roughness: 0.45,
-        metalness: 0.15,
         sootDensity: 0.25,
         pulseSpeed: 1.8,
-        pulseAmplitude: 0.03,
-        cellStatus: "Mild Mucosal Inflammation",
+        cellStatus: "Mild Mucosal Irritation",
         cellStatusColor: "text-amber-400",
-        gasExchangeCapacity: "82%",
-        capacityLoss: "18% Loss",
+        gasCap: "82%",
+        gasLoss: "18% Loss",
         so2Reaction: "Early Sulfurous Acid (H₂SO₃) Irritation",
-        alveoliFillColor: "#e17575",
-        capillaryColor: "#dc2626",
-        capillaryWidth: 4.5,
+        fillColor: "#e17575",
+        capColor: "#dc2626",
+        capWidth: 4.5,
         edemaOpacity: 0.25,
         particles: 8,
-        ruptured: false,
-        clinicalSymptom: "Persistent dry cough, nocturnal wheezing, throat irritation, cilia paralysis."
+        symptoms: "Persistent dry nocturnal cough, cilia paralysis, throat irritation."
       },
       {
         year: 1967,
-        phase: "Acute Crisis & Severe Smog Episodes",
-        so2ppm: "0.20–0.50+ ppm",
+        phase: "Severe Crisis & Asthma Epidemic",
+        so2Text: "0.20–0.50+ ppm (Lethal Smog)",
         badgeClass: "bg-rose-500/20 text-rose-300 border-rose-500/30",
         lungColor: 0x7f1d1d,
-        lungEmissive: 0x2e0814,
         roughness: 0.65,
-        metalness: 0.25,
         sootDensity: 0.65,
-        pulseSpeed: 2.3,
-        pulseAmplitude: 0.02,
+        pulseSpeed: 2.2,
         cellStatus: "Severe Edema & Mucus Plugs",
         cellStatusColor: "text-rose-400",
-        gasExchangeCapacity: "58%",
-        capacityLoss: "42% Loss",
-        so2Reaction: "Heavy Acid Burns & Inflammatory Exudate",
-        alveoliFillColor: "#7f1d1d",
-        capillaryColor: "#991b1b",
-        capillaryWidth: 3,
+        gasCap: "58%",
+        gasLoss: "42% Loss",
+        so2Reaction: "Corrosive Acid Burns & Edema",
+        fillColor: "#7f1d1d",
+        capColor: "#991b1b",
+        capWidth: 3,
         edemaOpacity: 0.65,
         particles: 18,
-        ruptured: false,
-        clinicalSymptom: "Intractable asthmatic attacks, severe chest tightness, schools deploying oxygen pods."
+        symptoms: "Severe asthma attacks, school oxygen pods deployed, chronic suffocation."
       },
       {
         year: 1972,
-        phase: "Permanent Remodeling & Historic Ruling",
-        so2ppm: "0.058 ppm (Cumulative)",
+        phase: "Permanent Damage & Lawsuit",
+        so2Text: "0.058 ppm (Chronic Damage)",
         badgeClass: "bg-purple-500/20 text-purple-300 border-purple-500/30",
         lungColor: 0x1e293b,
-        lungEmissive: 0x020617,
         roughness: 0.85,
-        metalness: 0.4,
         sootDensity: 0.95,
         pulseSpeed: 1.1,
-        pulseAmplitude: 0.015,
-        cellStatus: "Ruptured Alveolar Septa (Emphysema)",
+        cellStatus: "Ruptured Septa (Emphysema)",
         cellStatusColor: "text-purple-400",
-        gasExchangeCapacity: "38%",
-        capacityLoss: "62% Loss",
-        so2Reaction: "Irreversible Fibrosis & Alveolar Breakdown",
-        alveoliFillColor: "#1e293b",
-        capillaryColor: "#475569",
-        capillaryWidth: 2,
+        gasCap: "38%",
+        gasLoss: "62% Loss",
+        so2Reaction: "Irreversible Fibrosis & Rupture",
+        fillColor: "#1e293b",
+        capColor: "#475569",
+        capWidth: 2,
         edemaOpacity: 0.8,
-        particles: 28,
-        ruptured: true,
-        clinicalSymptom: "Chronic Obstructive Pulmonary Disease (COPD), permanent hypoxia/cyanosis, lifetime disability."
+        particles: 26,
+        symptoms: "Permanent emphysema, irreversible COPD, lifelong oxygen dependency."
       }
     ];
 
-    let currentIndex = 0;
+    let currentYearIdx = 0;
     let autoRotate = true;
 
-    // --- THREE.JS 3D WEBGL ENGINE ---
-    let scene, camera, renderer, lungGroup, leftLung, rightLung, particlesMesh;
-    const mount = document.getElementById('threejs-mount');
-    let targetRotation = { x: 0, y: 0 };
+    // --- THREE.JS 3D ENGINE (ROBUST & PHONE TOUCH-READY) ---
+    let scene, camera, renderer, lungGroup, leftMesh, rightMesh, particleSystem;
+    const container = document.getElementById('three-container');
+    let targetRot = { x: 0, y: 0 };
     let isDragging = false;
-    let prevMouse = { x: 0, y: 0 };
+    let lastPos = { x: 0, y: 0 };
 
-    function initThree() {
-      const width = mount.clientWidth;
-      const height = mount.clientHeight;
+    function init3D() {
+      if (!container || typeof THREE === 'undefined') return;
+
+      const w = container.clientWidth || 300;
+      const h = container.clientHeight || 260;
 
       scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+      camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
       camera.position.set(0, 0, 7.5);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      mount.appendChild(renderer.domElement);
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      container.appendChild(renderer.domElement);
 
-      // Lighting
-      scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-      const dir1 = new THREE.DirectionalLight(0xffffff, 2.0);
-      dir1.position.set(5, 8, 5);
-      scene.add(dir1);
-      const dir2 = new THREE.DirectionalLight(0x38bdf8, 1.0);
-      dir2.position.set(-5, -4, -3);
-      scene.add(dir2);
+      // Lights
+      scene.add(new THREE.AmbientLight(0xffffff, 1.3));
+      const light1 = new THREE.DirectionalLight(0xffffff, 1.8);
+      light1.position.set(5, 8, 5);
+      scene.add(light1);
+      const light2 = new THREE.DirectionalLight(0x38bdf8, 1.0);
+      light2.position.set(-5, -4, -3);
+      scene.add(light2);
 
       lungGroup = new THREE.Group();
       scene.add(lungGroup);
 
-      // Shared Material
+      // Materials using SphereGeometry (works on 100% of devices)
       const lungMat = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(TIMELINE_DATA[0].lungColor),
-        roughness: TIMELINE_DATA[0].roughness,
-        metalness: TIMELINE_DATA[0].metalness,
-        emissive: new THREE.Color(TIMELINE_DATA[0].lungEmissive),
-        emissiveIntensity: 0.3
+        color: new THREE.Color(DATA[0].lungColor),
+        roughness: DATA[0].roughness,
+        metalness: 0.15
       });
 
-      // Left & Right Lung Lobes
-      const leftGeo = new THREE.CapsuleGeometry(0.85, 1.6, 16, 32);
-      leftGeo.scale(1, 1.2, 0.7);
-      leftLung = new THREE.Mesh(leftGeo, lungMat);
-      leftLung.position.set(-1.05, -0.2, 0);
-      leftLung.rotation.z = -0.15;
-      lungGroup.add(leftLung);
+      // Left Lung Lobe
+      const leftGeo = new THREE.SphereGeometry(1.0, 32, 24);
+      leftGeo.scale(0.85, 1.45, 0.7);
+      leftMesh = new THREE.Mesh(leftGeo, lungMat);
+      leftMesh.position.set(-1.0, -0.1, 0);
+      leftMesh.rotation.z = -0.15;
+      lungGroup.add(leftMesh);
 
-      const rightGeo = new THREE.CapsuleGeometry(0.92, 1.7, 16, 32);
-      rightGeo.scale(1, 1.25, 0.75);
-      rightLung = new THREE.Mesh(rightGeo, lungMat);
-      rightLung.position.set(1.1, -0.15, 0);
-      rightLung.rotation.z = 0.15;
-      lungGroup.add(rightLung);
+      // Right Lung Lobe
+      const rightGeo = new THREE.SphereGeometry(1.0, 32, 24);
+      rightGeo.scale(0.9, 1.5, 0.75);
+      rightMesh = new THREE.Mesh(rightGeo, lungMat);
+      rightMesh.position.set(1.05, -0.05, 0);
+      rightMesh.rotation.z = 0.15;
+      lungGroup.add(rightMesh);
 
       // Trachea
-      const trachMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4, metalness: 0.3 });
-      const trachGeo = new THREE.CylinderGeometry(0.2, 0.22, 1.6, 24);
+      const trachMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.4 });
+      const trachGeo = new THREE.CylinderGeometry(0.18, 0.2, 1.5, 16);
       const trachea = new THREE.Mesh(trachGeo, trachMat);
-      trachea.position.set(0, 1.4, 0);
+      trachea.position.set(0, 1.35, 0);
       lungGroup.add(trachea);
 
       // Bronchi
-      const bLeft = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.9, 16), trachMat);
-      bLeft.position.set(-0.45, 0.5, 0);
-      bLeft.rotation.z = 0.7;
-      lungGroup.add(bLeft);
+      const b1 = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.15, 0.85, 12), trachMat);
+      b1.position.set(-0.45, 0.5, 0);
+      b1.rotation.z = 0.7;
+      lungGroup.add(b1);
 
-      const bRight = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.17, 0.9, 16), trachMat);
-      bRight.position.set(0.48, 0.48, 0);
-      bRight.rotation.z = -0.7;
-      lungGroup.add(bRight);
+      const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.85, 12), trachMat);
+      b2.position.set(0.48, 0.48, 0);
+      b2.rotation.z = -0.7;
+      lungGroup.add(b2);
 
       // Particles
-      const pCount = 200;
+      const pCount = 180;
       const pGeo = new THREE.BufferGeometry();
-      const pPos = new Float32Array(pCount * 3);
+      const pArr = new Float32Array(pCount * 3);
       for (let i = 0; i < pCount * 3; i += 3) {
-        pPos[i] = (Math.random() - 0.5) * 3.5;
-        pPos[i + 1] = (Math.random() - 0.5) * 3.5;
-        pPos[i + 2] = (Math.random() - 0.5) * 2.0;
+        pArr[i] = (Math.random() - 0.5) * 3.5;
+        pArr[i + 1] = (Math.random() - 0.5) * 3.5;
+        pArr[i + 2] = (Math.random() - 0.5) * 2.0;
       }
-      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-      const pMat = new THREE.PointsMaterial({ color: 0xf59e0b, size: 0.05, transparent: true, opacity: 0 });
-      particlesMesh = new THREE.Points(pGeo, pMat);
-      lungGroup.add(particlesMesh);
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pArr, 3));
+      particleSystem = new THREE.Points(pGeo, new THREE.PointsMaterial({ color: 0xf59e0b, size: 0.05, transparent: true, opacity: 0 }));
+      lungGroup.add(particleSystem);
 
       // Animation Loop
-      const clock = new THREE.Clock();
-      function animate() {
-        requestAnimationFrame(animate);
+      let clock = new THREE.Clock();
+      function renderLoop() {
+        requestAnimationFrame(renderLoop);
         const t = clock.getElapsedTime();
-        const current = TIMELINE_DATA[currentIndex];
+        const cur = DATA[currentYearIdx];
 
-        // Breathing cycle
-        const breath = 1.0 + Math.sin(t * current.pulseSpeed) * current.pulseAmplitude;
-        leftLung.scale.set(1 * breath, 1.2 * breath, 0.7 * breath);
-        rightLung.scale.set(1 * breath, 1.25 * breath, 0.75 * breath);
+        const breath = 1.0 + Math.sin(t * cur.pulseSpeed) * 0.03;
+        leftMesh.scale.set(0.85 * breath, 1.45 * breath, 0.7 * breath);
+        rightMesh.scale.set(0.9 * breath, 1.5 * breath, 0.75 * breath);
 
         if (autoRotate && !isDragging) {
-          lungGroup.rotation.y += 0.006;
+          lungGroup.rotation.y += 0.007;
         } else {
-          lungGroup.rotation.y += (targetRotation.y - lungGroup.rotation.y) * 0.1;
-          lungGroup.rotation.x += (targetRotation.x - lungGroup.rotation.x) * 0.1;
+          lungGroup.rotation.y += (targetRot.y - lungGroup.rotation.y) * 0.1;
+          lungGroup.rotation.x += (targetRot.x - lungGroup.rotation.x) * 0.1;
         }
 
-        particlesMesh.rotation.y = t * 0.1;
+        particleSystem.rotation.y = t * 0.1;
         renderer.render(scene, camera);
       }
-      animate();
+      renderLoop();
 
-      // Mouse drag handlers
-      mount.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        prevMouse = { x: e.clientX, y: e.clientY };
-      });
-      window.addEventListener('mousemove', (e) => {
+      // Touch & Mouse Drag Handlers
+      const startDrag = (x, y) => { isDragging = true; lastPos = { x, y }; };
+      const moveDrag = (x, y) => {
         if (!isDragging) return;
-        targetRotation.y += (e.clientX - prevMouse.x) * 0.01;
-        targetRotation.x += (e.clientY - prevMouse.y) * 0.01;
-        targetRotation.x = Math.max(-0.6, Math.min(0.6, targetRotation.x));
-        prevMouse = { x: e.clientX, y: e.clientY };
-      });
-      window.addEventListener('mouseup', () => { isDragging = false; });
+        targetRot.y += (x - lastPos.x) * 0.012;
+        targetRot.x += (y - lastPos.y) * 0.012;
+        targetRot.x = Math.max(-0.6, Math.min(0.6, targetRot.x));
+        lastPos = { x, y };
+      };
+      const endDrag = () => { isDragging = false; };
 
-      // Hover prompt toggle
-      const prompt = document.getElementById('hoverPrompt');
-      mount.addEventListener('mouseenter', () => prompt.classList.remove('opacity-0'));
-      mount.addEventListener('mouseleave', () => prompt.classList.add('opacity-0'));
+      // Mouse
+      container.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+      window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+      window.addEventListener('mouseup', endDrag);
+
+      // Touch for Mobile Phones
+      container.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }, { passive: true });
+      window.addEventListener('touchend', endDrag);
 
       // Resize
       window.addEventListener('resize', () => {
-        const nw = mount.clientWidth;
-        const nh = mount.clientHeight;
+        if (!container || !renderer || !camera) return;
+        const nw = container.clientWidth || 300;
+        const nh = container.clientHeight || 260;
         camera.aspect = nw / nh;
         camera.updateProjectionMatrix();
         renderer.setSize(nw, nh);
       });
     }
 
-    // Update 3D Materials when timeline updates
-    function update3DMaterials() {
-      const data = TIMELINE_DATA[currentIndex];
-      leftLung.material.color.setHex(data.lungColor);
-      leftLung.material.roughness = data.roughness;
-      leftLung.material.metalness = data.metalness;
-      leftLung.material.emissive.setHex(data.lungEmissive);
-
-      rightLung.material.color.setHex(data.lungColor);
-      rightLung.material.roughness = data.roughness;
-      rightLung.material.metalness = data.metalness;
-      rightLung.material.emissive.setHex(data.lungEmissive);
-
-      particlesMesh.material.opacity = Math.max(0.05, data.sootDensity);
-      particlesMesh.material.color.setHex(data.sootDensity > 0.5 ? 0xef4444 : 0xf59e0b);
-    }
-
-    function toggleOrbit() {
+    function toggle3DOrbit() {
       autoRotate = !autoRotate;
-      document.getElementById('orbitBtnText').innerText = autoRotate ? 'Orbit: ON' : 'Orbit: OFF';
+      document.getElementById('orbitToggleBtn').innerText = autoRotate ? 'Orbit: ON' : 'Orbit: OFF';
     }
 
-    function reset3DCamera() {
-      targetRotation = { x: 0, y: 0 };
-      lungGroup.rotation.set(0, 0, 0);
-    }
+    // --- TIMELINE STATE CONTROLLER ---
+    function setYear(idx) {
+      currentYearIdx = idx;
+      const d = DATA[idx];
 
-    // --- TIMELINE STATE MANAGEMENT ---
-    function setYearIndex(idx) {
-      currentIndex = idx;
-      const data = TIMELINE_DATA[idx];
+      // Slider & Buttons
+      document.getElementById('timelineSlider').value = idx;
+      document.getElementById('yearDisplay').innerText = d.year;
+      document.getElementById('phaseDisplay').innerText = `• ${d.phase}`;
 
-      // Update Slider Input
-      document.getElementById('timeRangeSlider').value = idx;
+      const badge = document.getElementById('so2Badge');
+      badge.innerText = d.so2Text;
+      badge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold font-mono border ${d.badgeClass}`;
 
-      // Update Header Text & Badges
-      document.getElementById('currentYearText').innerText = data.year;
-      document.getElementById('currentPhaseText').innerText = `• ${data.phase}`;
-      
-      const badge = document.getElementById('currentSO2Badge');
-      badge.innerText = data.so2ppm;
-      badge.className = `text-[11px] font-mono font-bold px-2 py-0.5 rounded-full border ${data.badgeClass}`;
-
-      // Update 4 Quick Buttons
       for (let i = 0; i < 4; i++) {
-        const btn = document.getElementById(`btnNode${i}`);
+        const btn = document.getElementById(`nodeBtn${i}`);
         if (i === idx) {
-          btn.className = "px-2.5 py-1 rounded-lg text-xs font-mono border bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-md shadow-amber-500/20";
+          btn.className = "py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-amber-500 text-slate-950 border-amber-400 shadow-md shadow-amber-500/20";
         } else {
-          btn.className = "px-2.5 py-1 rounded-lg text-xs font-mono border bg-slate-900 text-slate-400 border-slate-800 hover:text-white";
+          btn.className = "py-1.5 text-center rounded-lg text-xs font-mono font-bold transition-all border bg-slate-950 text-slate-400 border-slate-800 hover:text-white";
         }
       }
 
-      // Update 3D Visualizer
-      update3DMaterials();
-      document.getElementById('macroTissueState').innerText = data.phase.split('&')[0];
-      document.getElementById('macroSootDensity').innerText = `${Math.round(data.sootDensity * 100)}%`;
+      // Update 3D Model
+      if (leftMesh && rightMesh && particleSystem) {
+        leftMesh.material.color.setHex(d.lungColor);
+        leftMesh.material.roughness = d.roughness;
+        rightMesh.material.color.setHex(d.lungColor);
+        rightMesh.material.roughness = d.roughness;
 
-      // Update SVG Micro Alveoli View
-      document.getElementById('alvFillStop1').setAttribute('stop-color', data.alveoliFillColor);
-      document.getElementById('alvFillStop2').setAttribute('stop-color', data.alveoliFillColor);
-      document.getElementById('edemaStop1').setAttribute('stop-opacity', data.edemaOpacity * 0.8);
-      document.getElementById('edemaStop2').setAttribute('stop-opacity', data.edemaOpacity * 0.4);
-
-      document.getElementById('capillary1').setAttribute('stroke', data.capillaryColor);
-      document.getElementById('capillary1').setAttribute('stroke-width', data.capillaryWidth);
-      document.getElementById('capillary2').setAttribute('stroke', data.capillaryColor);
-      document.getElementById('capillary2').setAttribute('stroke-width', Math.max(2, data.capillaryWidth - 1.5));
-
-      // Chemical formula label
-      const chem = document.getElementById('chemFormula');
-      if (data.edemaOpacity > 0) {
-        chem.classList.remove('opacity-0');
-      } else {
-        chem.classList.add('opacity-0');
+        particleSystem.material.opacity = d.sootDensity;
+        particleSystem.material.color.setHex(d.sootDensity > 0.5 ? 0xef4444 : 0xf59e0b);
       }
 
-      // Generate Soot Dots inside Alveoli
-      const sootGroup = document.getElementById('sootParticlesGroup');
-      sootGroup.innerHTML = '';
-      if (data.particles > 0) {
+      document.getElementById('macroStateText').innerText = d.phase.split('&')[0];
+      document.getElementById('macroSootText').innerText = `${Math.round(d.sootDensity * 100)}%`;
+
+      // Update SVG Micro Alveoli
+      document.getElementById('alvStopA').setAttribute('stop-color', d.fillColor);
+      document.getElementById('alvStopB').setAttribute('stop-color', d.fillColor);
+      document.getElementById('edemaStopA').setAttribute('stop-opacity', d.edemaOpacity * 0.8);
+      document.getElementById('edemaStopB').setAttribute('stop-opacity', d.edemaOpacity * 0.4);
+
+      document.getElementById('cap1').setAttribute('stroke', d.capColor);
+      document.getElementById('cap1').setAttribute('stroke-width', d.capWidth);
+      document.getElementById('cap2').setAttribute('stroke', d.capColor);
+      document.getElementById('cap2').setAttribute('stroke-width', Math.max(2, d.capWidth - 1.5));
+
+      // Soot particles
+      const pGroup = document.getElementById('svgParticleGroup');
+      pGroup.innerHTML = '';
+      if (d.particles > 0) {
         const centers = [{x:85, y:90}, {x:155, y:85}, {x:95, y:155}, {x:160, y:150}];
         centers.forEach(c => {
-          for (let p = 0; p < data.particles; p++) {
+          for (let p = 0; p < d.particles; p++) {
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            const angle = Math.random() * Math.PI * 2;
+            const ang = Math.random() * Math.PI * 2;
             const dist = Math.random() * 24;
-            circle.setAttribute('cx', c.x + Math.cos(angle) * dist);
-            circle.setAttribute('cy', c.y + Math.sin(angle) * dist);
+            circle.setAttribute('cx', c.x + Math.cos(ang) * dist);
+            circle.setAttribute('cy', c.y + Math.sin(ang) * dist);
             circle.setAttribute('r', (Math.random() * 1.5 + 1).toString());
             circle.setAttribute('fill', p % 2 === 0 ? '#09090b' : '#7f1d1d');
-            sootGroup.appendChild(circle);
+            pGroup.appendChild(circle);
           }
         });
       }
 
-      // Update Micro-Data Card
-      document.getElementById('microCellStatus').innerText = data.cellStatus;
-      document.getElementById('microCellStatus').className = `text-xs font-bold font-mono ${data.cellStatusColor}`;
-      document.getElementById('microGasCapacity').innerText = data.gasExchangeCapacity;
-      document.getElementById('microCapacityLoss').innerText = `(${data.capacityLoss})`;
-      document.getElementById('microSO2Reaction').innerText = data.so2Reaction;
-      document.getElementById('microClinicalSymptom').innerText = data.clinicalSymptom;
-      document.getElementById('microEdemaPct').innerText = `Alveolar Edema: ${Math.round(data.edemaOpacity * 100)}%`;
+      // Diagnostic Card
+      document.getElementById('cellStatusText').innerText = d.cellStatus;
+      document.getElementById('cellStatusText').className = `font-mono block text-xs font-bold ${d.cellStatusColor}`;
+      document.getElementById('gasCapText').innerText = d.gasCap;
+      document.getElementById('gasLossText').innerText = `(${d.gasLoss})`;
+      document.getElementById('so2ReactionText').innerText = d.so2Reaction;
+      document.getElementById('symptomText').innerText = d.symptoms;
     }
 
-    // Slider range change
-    document.getElementById('timeRangeSlider').addEventListener('input', (e) => {
-      setYearIndex(parseInt(e.target.value));
+    document.getElementById('timelineSlider').addEventListener('input', (e) => {
+      setYear(parseInt(e.target.value));
     });
 
-    // Keyboard Arrow Controls
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        if (currentIndex + 1 < 4) setYearIndex(currentIndex + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        if (currentIndex - 1 >= 0) setYearIndex(currentIndex - 1);
-      }
+    function selectAlveolus(num) {
+      document.getElementById(`sacA1`).setAttribute('stroke', '#fbcfe8');
+      document.getElementById(`sacA2`).setAttribute('stroke', '#fbcfe8');
+      document.getElementById(`sacB1`).setAttribute('stroke', '#fbcfe8');
+      document.getElementById(`sacB2`).setAttribute('stroke', '#fbcfe8');
+      const idMap = {1:'sacA1', 2:'sacA2', 3:'sacB1', 4:'sacB2'};
+      document.getElementById(idMap[num]).setAttribute('stroke', '#38bdf8');
+    }
+
+    // Initialize on DOM load
+    document.addEventListener('DOMContentLoaded', () => {
+      init3D();
+      setYear(0);
     });
-
-    // Alveolus Hover Tooltip
-    function hoverAlveolus(num) {
-      document.getElementById('microInspectTitle').innerText = `ALVEOLUS A${num} INSPECTION`;
-      document.getElementById(`sac${num}`).setAttribute('stroke', '#38bdf8');
-      document.getElementById(`sac${num}`).setAttribute('stroke-width', '3');
-    }
-    function unhoverAlveolus() {
-      document.getElementById('microInspectTitle').innerText = 'CELLULAR DIAGNOSTIC CARD';
-      for (let i = 1; i <= 4; i++) {
-        document.getElementById(`sac${i}`).setAttribute('stroke', '#fbcfe8');
-        document.getElementById(`sac${i}`).setAttribute('stroke-width', '2');
-      }
-    }
-
-    // Drawer Toggle
-    let drawerExpanded = false;
-    function toggleDrawer() {
-      drawerExpanded = !drawerExpanded;
-      const content = document.getElementById('drawerContent');
-      const text = document.getElementById('drawerBtnText');
-      const chevron = document.getElementById('drawerChevron');
-      if (drawerExpanded) {
-        content.classList.remove('hidden');
-        text.innerText = 'Collapse Context';
-        chevron.setAttribute('data-lucide', 'chevron-down');
-      } else {
-        content.classList.add('hidden');
-        text.innerText = 'Expand Judicial & Policy Context';
-        chevron.setAttribute('data-lucide', 'chevron-up');
-      }
-      lucide.createIcons();
-    }
-
-    // Start 3D Engine on load
-    window.onload = () => {
-      initThree();
-      setYearIndex(0);
-    };
   </script>
 </body>
 </html>
